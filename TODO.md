@@ -1,0 +1,8 @@
+- Make POSIX compliant
+- Dependencies
+ - Check for in script
+ - Talk about in README
+ - Make it possible to use multiple different utitlities (arai2c/wget, yt-dlp/youtube-dl)
+- Add options (like for tags)
+- Add html file maker so you don't have to download anything
+ - Include titles/descriptions of posts
