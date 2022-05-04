@@ -2,7 +2,16 @@
 - Dependencies
  - Check for in script
  - Talk about in README
- - Make it possible to use multiple different utitlities (arai2c/wget, yt-dlp/youtube-dl)
+ - Make it possible to use multiple different utilities (arai2c/wget, yt-dlp/youtube-dl)
 - Add options (like for tags)
 - Add html file maker so you don't have to download anything
  - Include titles/descriptions of posts
+- Add better media scaling
+- Make audio work
+ - Make media actual streaming instead of jank script solution
+  - Add download video button
+- Better video/image identification
+- Config files
+- Switch Language?
+- Install Script
+# KNOWN BUGS

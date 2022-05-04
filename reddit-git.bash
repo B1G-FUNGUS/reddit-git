@@ -45,42 +45,41 @@ do
 done
 
 [ -v dformat ] || dformat="%Y-%m-%d_%H%M%S"
-[ -v number ] || number="25"
+[ -v number ] || number="100"
 
 dirname=$1_$(date +"$dformat")
-
 mkdir $dirname
 cd $dirname
 
 link="https://www.reddit.com/r/$1/.json?limit=$number"
 wget $link -O tempfile
 
-echo '<html> 
-<style> 
-	img, iframe { 
-		width: 50%; 
-		margin-left: 10%;
-	} 
-	p, h1 {
-		margin-left: 10%;
-		margin-right: 20%;
-	}
-</style>' > site.html
+[ -f ~/.config/redditgit/style.html] || (
+	echo -n Creating style file
+	if [ -v $XDG_CONFIG_HOME ]
+	then
+		install -D style.html "$XDG_CONFIG_HOME/style.html"
+		echo "$XDG_CONFIG_HOME/style.html"
+	else
+		install -D style.html ~/.config/style.html
+		echo ~/.config/style.html
+	fi )
+cp "$XDG_CONFIG_HOME/style.html" site.html || cp ~/.config/style.html site.html
 
 for num in $(seq 0 $(($number-1)))
 do
 	echo "<h1> $(jq -r .data.children[$num].data.title tempfile) </h1>" >> site.html
 	echo "<p> $(jq -r .data.children[$num].data.selftext tempfile) </p>" >> site.html
-	content="$(jq .data.children[$num].data.url_overridden_by_dest tempfile)"
-	letter="$(echo $content | cut -c 10)"
-	if [ "$letter" == "v" ]
+	content="$(jq -r .data.children[$num].data.url tempfile)"
+	domain="$(echo $content | cut -d / -f 3)"
+	if [ "$domain" == "v.redd.it" ]
 	then
-		vid="$(echo $content | cut -d / -f 4)"
-		echo "<video control>
-<source src=\"https://v.redd.it/$vid/DASH_480.mp4\">
-<source src\"https://v.redd.it/$vid/DASH_audio.mp4\">
+		media="$(jq .data.children[$num].data.media.reddit_video tempfile)"
+		echo "<video width=$(echo $media | jq .width) height=$(echo $media | jq .height) controls>
+	<source src=$(echo $media | jq .fallback_url | cut -d ? -f 1)\">
+	<source src=$(echo $media | jq .fallback_url | cut -d _ -f 1)_audio.mp4\">
 </video>" >> site.html
-	elif [ "$letter" == "i" ]
+	elif [ "$domain" == "i.redd.it" ]
 	then
 		echo "<img src=$content>" >> site.html
 	fi
